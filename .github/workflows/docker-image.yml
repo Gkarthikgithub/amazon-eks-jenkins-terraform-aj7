@@ -1,18 +1,51 @@
-name: Docker Image CI
+name: CI/CD Pipeline 
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
-jobs:
+on: 
+  pull_request: 
+    types: 
+      - opened 
+      - synchronize 
+      - closed 
 
-  build:
+jobs: 
+  build: 
+    runs-on: ubuntu-latest 
+    steps: 
+      - name: Update Secrets 
+        run: 
+        env: 
+          CENTRAL_REPO_TOKEN: ${{ secrets.CENTRAL_REPO_TOKEN }} 
+    needs: build 
+    if: github.event.pull_request.merged == true 
+    on: 
+  push: 
+    branches: 
+      - main # Change this to your main branch name 
+    steps: 
+      - name: Checkout code 
+        uses: actions/checkout@v2 
+      - name: Set up Java 
+        uses: actions/setup-java@v2
+         with:
+        distribution: 'adopt'
+        java-version: '17'
+      - name: Build with Maven 
+        run: mvn clean package 
+      - name: Run Tests 
+        run: mvn test
 
-    runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name1:latest
+ 
+
+ 
+
+ 
+
+  
+
+ 
+
+           
+
+    
